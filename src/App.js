@@ -24,10 +24,12 @@ const os = window.require('os')
 const glob = window.require('glob')
 const { readFileSync } = window.require('fs')
 const path = window.require('path')
-const { shell, remote, ipcRenderer } = window.require('electron')
-const settings = window.require('electron-settings')
+const { shell, ipcRenderer } = window.require('electron')
+const Store = window.require('electron-store')
+const remote = window.require('@electron/remote')
 const log = remote.getGlobal('log')
 const platform = os.platform()
+const settings = new Store({ name: 'settings' })
 
 class App extends Component {
   state = {
@@ -209,9 +211,7 @@ class App extends Component {
   loadPractices = () => {
     return new Promise((resolve, reject) =>
       this.setState({ loading: true }, () => {
-        const process = remote.process
-        const dev = process.env.STETHOSCOPE_ENV === 'development'
-        const basePath = `${dev ? '.' : process.resourcesPath}/src/practices`
+        const basePath = ipcRenderer.sendSync('get:env:basePath')
 
         glob(`${basePath}/*.yaml`, (err, files) => {
           if (err || !files.length) {

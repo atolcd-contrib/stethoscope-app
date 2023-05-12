@@ -1,13 +1,12 @@
 import { compile, setKmdEnv, run } from 'kmd-script/src'
-import { graphiqlExpress } from 'graphql-server-express'
+// import { graphiqlExpress } from 'graphql-server-express'
 import { graphql } from 'graphql'
 import noCache from 'nocache'
-import { makeExecutableSchema } from 'graphql-tools'
+import { makeExecutableSchema } from '@graphql-tools/schema'
 import { performance } from 'perf_hooks'
 import { PORT } from './constants'
 import kmd from './lib/kmd'
 import { Server } from 'http'
-import bodyParser from 'body-parser'
 import cors from 'cors'
 import express from 'express'
 import extend from 'extend'
@@ -25,7 +24,7 @@ const Schema = readFileSync(path.join(__dirname, '../schema.graphql'), 'utf8')
 const IS_DEV = process.env.STETHOSCOPE_ENV === 'development'
 const app = express()
 const server = new Server(app)
-const io = socketio(server, { wsEngine: 'ws' })
+const io = socketio(server, { wsEngine: require('ws').Server })
 
 function matchHost (origin) {
   return label => {
@@ -40,11 +39,14 @@ setKmdEnv({
 })
 
 function precompile () {
-  const searchPath = path.resolve(__dirname, `./sources/${process.platform}/*.sh`)
+  let searchPath = path.resolve(__dirname, `./sources/${process.platform}/*.sh`)
+  if (process.platform === 'win32') {
+    // glob wants the pattern with forward slashes
+    searchPath = searchPath.replace(/\\/g, '/')
+  }
   return glob(searchPath)
     .then(files =>
-      files.map(file =>
-        compile(readFileSync(file, 'utf8'))
+      files.map((file) => compile(readFileSync(file, 'utf8'))
       )
     )
 }
@@ -58,12 +60,12 @@ export default async function startServer (env, log, language = 'en-US', appActi
   const checks = await precompile()
   const find = filePath => path.join(__dirname, filePath)
   const settingsHandle = readFileSync(find('./practices/config.yaml'), 'utf8')
-  const defaultConfig = yaml.safeLoad(settingsHandle)
+  const defaultConfig = yaml.load(settingsHandle)
 
   app.use(helmet())
   app.use(noCache())
-  app.use(bodyParser.urlencoded({ extended: true }))
-  app.use(bodyParser.json())
+  app.use(express.urlencoded())
+  app.use(express.json())
 
   const schema = makeExecutableSchema({
     resolvers: Resolvers,
@@ -96,7 +98,7 @@ export default async function startServer (env, log, language = 'en-US', appActi
   // policy, instructions and config data should only be served to app
   const policyRequestOptions = {
     origin (origin, callback) {
-      const allowed = ['http://localhost:', 'stethoscope://', 'http://127.0.0.1:']
+      const allowed = ['http://localhost:', 'drsprinto://', 'http://127.0.0.1:']
       if (origin && allowed.some(hostname => origin.startsWith(hostname))) {
         callback(null, true)
       } else {
@@ -106,26 +108,27 @@ export default async function startServer (env, log, language = 'en-US', appActi
     }
   }
 
-  if (IS_DEV) {
-    app.use('/graphiql', cors(corsOptions), graphiqlExpress({ endpointURL: '/scan' }))
-  }
+  // if (IS_DEV) {
+  //   app.use('/graphiql', cors(corsOptions), graphiqlExpress({ endpointURL: '/scan' }))
+  // }
 
   app.get('/debugger', cors(corsOptions), async (req, res) => {
+    log.info('Collecting debug info')
     let promise = Promise.resolve()
 
     if (req.get('host') !== '127.0.0.1:37370') {
       promise = appActions.requestLogPermission(req.get('origin'))
       appActions.enableDebugger()
     }
-
     promise.then(async () => {
-      const file = readFileSync(log.getLogFile())
+      log.warn(checks.length)
       const promises = Object.entries(checks).map(async ([name, script]) => {
-        try { return await run(script) } catch (e) { return '' }
+        try { return await run(script) } catch (e) { return { name: { error: e } } }
       })
       const checkData = await Promise.all(promises)
       // format response
       const sep = `\n${'='.repeat(20)}\n`
+      const file = readFileSync(log.getLogFile())
       const noColor = String(file).replace(/\[[\d]+m?:?/g, '') + '\n'
       const str = JSON.stringify(extend(true, {}, ...checkData), null, 3)
       const version = `Stethoscope version: ${pkg.version}`
@@ -143,6 +146,12 @@ export default async function startServer (env, log, language = 'en-US', appActi
     res.json(extend(true, {}, ...checkData))
   })
 
+  app.post('/update-last-reported-timestamp', cors(corsOptions), async (req, res) => {
+    // Record the timestamp of successful status report
+    io.sockets.emit('sprinto:devicelogrecorded')
+    res.status(201).send('Updated')
+  })
+
   app.use(['/scan', '/graphql'], cors(corsOptions), async (req, res) => {
     // set upper boundary on scan time (45 seconds)
     req.setTimeout(45000, () => {
@@ -152,8 +161,8 @@ export default async function startServer (env, log, language = 'en-US', appActi
     // allow GET/POST requests and determine what property to use
     const key = req.method === 'POST' ? 'body' : 'query'
     const origin = req.get('origin')
-    const isRemote = origin !== 'stethoscope://main'
-    let remoteLabel = 'Stethoscope'
+    const isRemote = origin !== 'drsprinto://main'
+    let remoteLabel = 'DrSprinto'
 
     // Try to find the host label to display in app ("Last scanned by X")
     if (isRemote) {
@@ -163,7 +172,6 @@ export default async function startServer (env, log, language = 'en-US', appActi
         remoteLabel = label.name
       }
     }
-
     const { query, sessionId = false } = req[key]
     let { variables: policy } = req[key]
     // native notifications are only shown for external requests and
@@ -246,12 +254,12 @@ export default async function startServer (env, log, language = 'en-US', appActi
       (req, res) => {
         const filePath = getFilePath(filename)
         try {
-          const response = yaml.safeLoad(readFileSync(filePath, 'utf8'))
+          const response = yaml.load(readFileSync(filePath, 'utf8'))
           res.json(transform(response))
         } catch (e) {
           log.error(`Failed to load and transform ${filePath}`)
           if (fallback && typeof fallback === 'string') {
-            const response = yaml.safeLoad(readFileSync(getFilePath(fallback), 'utf8'))
+            const response = yaml.load(readFileSync(getFilePath(fallback), 'utf8'))
             res.json(transform(response))
           }
         }
@@ -277,9 +285,9 @@ export default async function startServer (env, log, language = 'en-US', appActi
 
   const serverInstance = server.listen(PORT, '127.0.0.1', () => {
     console.log(`GraphQL server listening on ${PORT}`)
-    if (IS_DEV) {
-      console.log(`Explore the schema: http://127.0.0.1:${PORT}/graphiql`)
-    }
+    // if (IS_DEV) {
+    //   console.log(`Explore the schema: http://127.0.0.1:${PORT}/graphiql`)
+    // }
     serverInstance.emit('server:ready')
   })
 

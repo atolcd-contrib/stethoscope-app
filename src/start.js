@@ -21,7 +21,7 @@ import log from './lib/logger'
 import initMenu from './Menu'
 import config from './config.json'
 import { MINIMUM_AUTOSCAN_INTERVAL_SECONDS } from './constants'
-import settings from 'electron-settings'
+import Store from 'electron-store'
 import serializeError from 'serialize-error'
 import initProtocols from './lib/protocolHandlers'
 import loadReactDevTools from './lib/loadReactDevTools'
@@ -30,6 +30,11 @@ import startGraphQLServer from './server'
 import { IS_MAC, IS_WIN } from './lib/platform'
 import AutoLauncher from './AutoLauncher'
 import updateInit from './updater'
+
+const remoteMain = require('@electron/remote/main')
+remoteMain.initialize()
+
+const settings = new Store({ name: 'settings' })
 
 const env = process.env.STETHOSCOPE_ENV || 'production'
 const findIcon = iconFinder(env)
@@ -64,7 +69,8 @@ const windowPrefs = {
     nodeIntegration: true,
     webSecurity: false,
     contextIsolation: false,
-    sandbox: false
+    sandbox: false,
+    enableRemoteModule: true
   }
 }
 
@@ -88,6 +94,7 @@ const focusOrCreateWindow = (mainWindow) => {
     mainWindow.show()
   } else {
     mainWindow = new BrowserWindow(windowPrefs)
+    remoteMain.enable(mainWindow.webContents)
     initMenu(mainWindow, app, focusOrCreateWindow, updater, log)
     mainWindow.loadURL(BASE_URL)
   }
@@ -109,6 +116,7 @@ async function createWindow () {
   if (!IS_DEV && !enableDebugger) windowPrefs.resizable = false
 
   mainWindow = new BrowserWindow(windowPrefs)
+  remoteMain.enable(mainWindow.webContents)
 
   if (IS_DEV) loadReactDevTools(BrowserWindow)
   // open developer console if env vars or args request
@@ -198,7 +206,10 @@ async function createWindow () {
   })
 
   server.on('server:ready', () => {
-    if (!mainWindow) mainWindow = new BrowserWindow(windowPrefs)
+    if (!mainWindow) {
+      mainWindow = new BrowserWindow(windowPrefs)
+      remoteMain.enable(mainWindow.webContents)
+    }
     mainWindow.loadURL(BASE_URL)
     mainWindow.focus()
   })
@@ -378,6 +389,12 @@ process.on('uncaughtException', err => {
 
 app.on('window-all-closed', () => {
   // minimize to tray
+})
+
+ipcMain.on('get:env:basePath', (event, arg) => {
+  const dev = process.env.STETHOSCOPE_ENV === 'development'
+  const basePath = `${dev ? '.' : process.resourcesPath}/src/practices`
+  event.returnValue = basePath
 })
 
 export {}
