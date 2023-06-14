@@ -70,9 +70,6 @@ describe('GraphQL', () => {
           osVersion
           firewall
           diskEncryption
-          screenLock
-          automaticUpdates
-          remoteLogin
           stethoscopeVersion
 
           applications {
@@ -120,10 +117,7 @@ describe('GraphQL', () => {
           publicFirewall
           privateFirewall
           domainFirewall
-          automaticUpdates
           diskEncryption
-          screenLock
-          remoteLogin
           automaticAppUpdates
           automaticSecurityUpdates
           automaticOsUpdates
@@ -149,9 +143,6 @@ describe('GraphQL', () => {
         },
         firewall: 'ALWAYS',
         diskEncryption: 'ALWAYS',
-        automaticUpdates: 'SUGGESTED',
-        screenLock: 'IF_SUPPORTED',
-        remoteLogin: 'NEVER'
       }
     })
 

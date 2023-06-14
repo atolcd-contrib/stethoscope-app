@@ -26,7 +26,6 @@ export default class Loader extends React.Component {
       remoteScan,
       remoteLabel
     } = this.props
-
     let msg = remoteScan
       ? `${remoteLabel} is reading your device settings...`
       : 'Gathering device settings...'

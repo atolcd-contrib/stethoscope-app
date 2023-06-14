@@ -16,9 +16,6 @@ query ValidateDevice($policy: DevicePolicy!) {
       osVersion
       firewall
       diskEncryption
-      automaticUpdates
-      screenLock
-      remoteLogin
       stethoscopeVersion
     }
   }
@@ -52,10 +49,7 @@ query ValidateDevice($policy: DevicePolicy!) {
     }
     security {
       firewall
-      automaticUpdates
       diskEncryption
-      screenLock
-      remoteLogin
       automaticAppUpdates
       automaticSecurityUpdates
       automaticOsUpdates
@@ -83,8 +77,6 @@ Parameters
     },
     "firewall": "ALWAYS",
     "diskEncryption": "ALWAYS",
-    "automaticUpdates": "SUGGESTED",
-    "screenLock": "IF_SUPPORTED",
     "remoteLogin": "NEVER"
   }
 }
@@ -101,9 +93,6 @@ Response:
         "osVersion": "PASS",
         "firewall": "PASS",
         "diskEncryption": "PASS",
-        "automaticUpdates": "PASS",
-        "screenLock": "PASS",
-        "remoteLogin": "PASS",
         "stethoscopeVersion": "PASS"
       }
     },
@@ -165,10 +154,7 @@ Response:
       ],
       "security": {
         "firewall": "ON",
-        "automaticUpdates": "ON",
         "diskEncryption": "ON",
-        "screenLock": "OFF",
-        "remoteLogin": "OFF",
         "automaticAppUpdates": "ON",
         "automaticSecurityUpdates": "ON",
         "automaticOsUpdates": "ON"

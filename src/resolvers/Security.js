@@ -67,14 +67,6 @@ export default {
     return UNSUPPORTED
   },
 
-  async automaticUpdates (root, args, context) {
-    if ('automaticUpdates' in PlatformSecurity) {
-      return PlatformSecurity.automaticUpdates(root, args, context)
-    }
-
-    return UNSUPPORTED
-  },
-
   async remoteLogin (root, args, context) {
     if ('remoteLogin' in PlatformSecurity) {
       return PlatformSecurity.remoteLogin(root, args, context)
@@ -93,22 +85,6 @@ export default {
 
   async stethoscopeVersion (root, args, context) {
     return semver.satisfies(pkg.version, args.stethoscopeVersion, { includePrerelease: config.allowPrerelease })
-  },
-
-  async screenLock (root, args, context) {
-    if ('screenLock' in PlatformSecurity) {
-      return PlatformSecurity.screenLock(root, args, context)
-    }
-
-    return UNSUPPORTED
-  },
-
-  async screenIdle (root, args, context) {
-    if ('screenIdle' in PlatformSecurity) {
-      return PlatformSecurity.screenIdle(root, args, context)
-    }
-
-    return UNSUPPORTED
   },
 
   async osVersion (root, args, context) {
@@ -225,13 +201,6 @@ export default {
       })
     }
 
-    return UNSUPPORTED
-  },
-
-  async openWifiConnections (root, args, context) {
-    if ('openWifiConnections' in PlatformSecurity) {
-      return PlatformSecurity.openWifiConnections(root, args, context)
-    }
     return UNSUPPORTED
   }
 }

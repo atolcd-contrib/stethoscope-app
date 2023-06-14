@@ -1,5 +1,4 @@
 import { compile, setKmdEnv, run } from 'kmd-script/src'
-// import { graphiqlExpress } from 'graphql-server-express'
 import { graphql } from 'graphql'
 import noCache from 'nocache'
 import { makeExecutableSchema } from '@graphql-tools/schema'
@@ -39,22 +38,16 @@ setKmdEnv({
 })
 
 function precompile () {
-  let searchPath = path.resolve(__dirname, `./sources/${process.platform}/*.sh`)
-  if (process.platform === 'win32') {
-    // glob wants the pattern with forward slashes
-    searchPath = searchPath.replace(/\\/g, '/')
-  }
+  const searchPath = path.resolve(__dirname, `./sources/${process.platform}/*.sh`)
   return glob(searchPath)
     .then(files =>
       files.map((file) => compile(readFileSync(file, 'utf8'))
       )
     )
 }
-
 // used to ensure that user is not shown multiple notifications for a login scan
 // sessionId is used as a key
 const alertCache = new Map()
-
 export default async function startServer (env, log, language = 'en-US', appActions) {
   log.info('starting express server')
   const checks = await precompile()
@@ -64,7 +57,7 @@ export default async function startServer (env, log, language = 'en-US', appActi
 
   app.use(helmet())
   app.use(noCache())
-  app.use(express.urlencoded())
+  app.use(express.urlencoded({ extended: true }))
   app.use(express.json())
 
   const schema = makeExecutableSchema({
@@ -98,7 +91,7 @@ export default async function startServer (env, log, language = 'en-US', appActi
   // policy, instructions and config data should only be served to app
   const policyRequestOptions = {
     origin (origin, callback) {
-      const allowed = ['http://localhost:', 'drsprinto://', 'http://127.0.0.1:']
+      const allowed = ['http://localhost:', 'stethoscope://', 'http://127.0.0.1:']
       if (origin && allowed.some(hostname => origin.startsWith(hostname))) {
         callback(null, true)
       } else {
@@ -107,10 +100,6 @@ export default async function startServer (env, log, language = 'en-US', appActi
       }
     }
   }
-
-  // if (IS_DEV) {
-  //   app.use('/graphiql', cors(corsOptions), graphiqlExpress({ endpointURL: '/scan' }))
-  // }
 
   app.get('/debugger', cors(corsOptions), async (req, res) => {
     log.info('Collecting debug info')
@@ -122,16 +111,16 @@ export default async function startServer (env, log, language = 'en-US', appActi
     }
     promise.then(async () => {
       log.warn(checks.length)
+      const file = readFileSync(log.getLogFile())
       const promises = Object.entries(checks).map(async ([name, script]) => {
-        try { return await run(script) } catch (e) { return { name: { error: e } } }
+        try { return await run(script) } catch (e) { return '' }
       })
       const checkData = await Promise.all(promises)
       // format response
       const sep = `\n${'='.repeat(20)}\n`
-      const file = readFileSync(log.getLogFile())
       const noColor = String(file).replace(/\[[\d]+m?:?/g, '') + '\n'
       const str = JSON.stringify(extend(true, {}, ...checkData), null, 3)
-      const version = `Stethoscope version: ${pkg.version}`
+      const version = `Version de Stethoscope: ${pkg.version}`
       res.send(`${version}\nLOGS${sep}${noColor}DEVICE DATA${sep}${str}`)
     }).catch(() => {
       res.status(403).send('ACCESS DENIED')
@@ -146,12 +135,6 @@ export default async function startServer (env, log, language = 'en-US', appActi
     res.json(extend(true, {}, ...checkData))
   })
 
-  app.post('/update-last-reported-timestamp', cors(corsOptions), async (req, res) => {
-    // Record the timestamp of successful status report
-    io.sockets.emit('sprinto:devicelogrecorded')
-    res.status(201).send('Updated')
-  })
-
   app.use(['/scan', '/graphql'], cors(corsOptions), async (req, res) => {
     // set upper boundary on scan time (45 seconds)
     req.setTimeout(45000, () => {
@@ -161,8 +144,8 @@ export default async function startServer (env, log, language = 'en-US', appActi
     // allow GET/POST requests and determine what property to use
     const key = req.method === 'POST' ? 'body' : 'query'
     const origin = req.get('origin')
-    const isRemote = origin !== 'drsprinto://main'
-    let remoteLabel = 'DrSprinto'
+    const isRemote = origin !== 'stethoscope://main'
+    let remoteLabel = 'Stethoscope'
 
     // Try to find the host label to display in app ("Last scanned by X")
     if (isRemote) {
@@ -285,9 +268,7 @@ export default async function startServer (env, log, language = 'en-US', appActi
 
   const serverInstance = server.listen(PORT, '127.0.0.1', () => {
     console.log(`GraphQL server listening on ${PORT}`)
-    // if (IS_DEV) {
-    //   console.log(`Explore the schema: http://127.0.0.1:${PORT}/graphiql`)
-    // }
+
     serverInstance.emit('server:ready')
   })
 

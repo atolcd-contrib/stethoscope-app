@@ -3,21 +3,6 @@ import kmd from '../../lib/kmd'
 import { UNKNOWN, DEFAULT_WIN32_APP_REGISTRY_PATH } from '../../constants'
 
 export default {
-  async automaticUpdates (root, args, context) {
-    const result = await kmd('automatic-updates', context)
-    return result.automaticUpdatesNotificationLevel > 1
-  },
-
-  async remoteLogin (root, args, context) {
-    const device = await kmd('os', context)
-    // aws workspaces require remote login
-    if (device.system.platform === 'awsWorkspace') {
-      return false
-    }
-
-    const prefs = await kmd('remote-desktop', context)
-    return prefs.sharingPreferences.remoteDesktopDisabled !== '1'
-  },
 
   async diskEncryption (root, args, context) {
     const device = await kmd('os', context)
@@ -34,29 +19,10 @@ export default {
     return false
   },
 
-  async screenLock (root, args, context) {
-    const device = await kmd('os', context)
-    // // screen lock creates problems in workspaces
-    if (device.system.platform === 'awsWorkspace') {
-      return UNKNOWN
-    }
-
-    const lock = await kmd('screenlock', context)
-    const { windowsMaxScreenLockTimeout = 600 } = args
-    const chargingTimeout = parseInt(lock.chargingTimeout, 10)
-    const batteryTimeout = parseInt(lock.batteryTimeout, 10)
-
-    return (
-      // According to Windows: 0 = Never
-      chargingTimeout !== 0 &&
-      batteryTimeout !== 0 &&
-      chargingTimeout <= windowsMaxScreenLockTimeout &&
-      batteryTimeout <= windowsMaxScreenLockTimeout
-    )
-  },
 
   async firewall (root, args, context) {
     const result = await kmd('firewall', context)
+    
     return result.firewalls.every(fw => fw.status === 'ON')
   },
 

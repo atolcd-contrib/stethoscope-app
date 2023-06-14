@@ -37,9 +37,9 @@ export default function updater (env, mainWindow, log = console, server, focusOr
       if (!forceUpdate) {
         dialog.showMessageBox({
           type: 'info',
-          title: 'Stethoscope Update Available',
-          message: 'A new version of Stethoscope is available, would you like to download and update now?',
-          buttons: ['Yes', 'No'],
+          title: 'Mise à jour Stethoscope',
+          message: 'Une nouvelle version de Stethoscope est disponible, voulez-vous la télécharger et la mettre à jour maintenant?',
+          buttons: ['Oui', 'Non'],
           defaultId: 0
         }).then(({ response }) => {
           if (response === 0) {
@@ -65,8 +65,8 @@ export default function updater (env, mainWindow, log = console, server, focusOr
       if (isFirstLaunch) return
 
       dialog.showMessageBox({
-        title: 'No Stethoscope Updates',
-        message: 'You already have the latest version of Stethoscope.'
+        title: 'Pas de mise à jour disponible',
+        message: 'Vous disposez déjà de la dernière version de Stethoscope.'
       })
 
       attemptingUpdate = false

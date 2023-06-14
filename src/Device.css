@@ -59,7 +59,7 @@ ul.mac-addresses {
   opacity: 0.3;
 }
 .device-info-toggle.closed,
-.show-description.closed, {
+.show-description.closed {
   -ms-transform: rotate(-90deg); /* IE 9 */
   -webkit-transform: rotate(-90deg); /* Chrome, Safari, Opera */
   transform: rotate(90deg);

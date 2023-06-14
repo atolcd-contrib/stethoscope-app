@@ -179,23 +179,19 @@ class Device extends Component {
       deviceInfo = (
         <div className='deviceInfo'>
           <dl className='device-info'>
-            <dt>Type</dt>
+            <dt>Modèle</dt>
             <dd>{device.hardwareModel}&nbsp;</dd>
-            <dt>Manufacturer</dt>
+            <dt>OS utilisé</dt>
             <dd>{device.platformName}&nbsp;</dd>
-            <dt>Model</dt>
-            <dd>{device.hardwareModel}&nbsp;</dd>
-            <dt>Platform</dt>
+            <dt>Plateforme</dt>
             <dd>{device.platform}&nbsp;</dd>
-            <dt>OS Version</dt>
+            <dt>Version de l'OS</dt>
             <dd>{device.osVersion}&nbsp;</dd>
-            <dt>Name</dt>
+            <dt>Nom appareil</dt>
             <dd>{device.deviceName}&nbsp;</dd>
-            <dt>Serial</dt>
-            <dd>{device.hardwareSerial}&nbsp;</dd>
             <dt>UDID</dt>
             <dd>{device.deviceId}&nbsp;</dd>
-            <dt>Status</dt>
+            <dt>Statut sécurité</dt>
             <dd>{scanResult.status}&nbsp;</dd>
           </dl>
         </div>

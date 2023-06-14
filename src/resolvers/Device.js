@@ -2,7 +2,7 @@ import pkg from '../../package.json'
 import NetworkInterface from '../lib/NetworkInterface'
 import Security from './Security'
 import kmd from '../lib/kmd'
-import { ON, OFF, UNKNOWN, UNSUPPORTED, NUDGE, PASS, FAIL } from '../constants'
+import { ON, OFF, UNKNOWN, UNSUPPORTED, NUDGE } from '../constants'
 import { PlatformDevice } from './platform/'
 
 const securityToDeviceStatus = status => {
@@ -12,14 +12,6 @@ const securityToDeviceStatus = status => {
 
   if (status === NUDGE) {
     return OFF
-  }
-
-  return UNKNOWN
-}
-
-const securityToPassFailStatus = status => {
-  if (typeof status === 'boolean') {
-    return status ? PASS : FAIL
   }
 
   return UNKNOWN
@@ -144,11 +136,6 @@ const Device = {
         return securityToDeviceStatus(status)
       },
 
-      async automaticUpdates () {
-        const status = await Security.automaticUpdates(root, args, context)
-        return securityToDeviceStatus(status)
-      },
-
       async automaticSecurityUpdates () {
         const status = await Security.automaticSecurityUpdates(root, args, context)
         return securityToDeviceStatus(status)
@@ -182,16 +169,6 @@ const Device = {
       async diskEncryption () {
         const status = await Security.diskEncryption(root, args, context)
         return securityToDeviceStatus(status)
-      },
-
-      async screenLock () {
-        const status = await Security.screenLock(root, args, context)
-        return securityToDeviceStatus(status)
-      },
-
-      async screenIdle () {
-        const status = await Security.screenIdle(root, args, context)
-        return securityToPassFailStatus(status)
       },
 
       async remoteLogin () {

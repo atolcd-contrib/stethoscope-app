@@ -74,12 +74,7 @@ export default class Stethoscope {
           osVersion
           firewall
           diskEncryption
-          screenLock
-          screenIdle
-          automaticUpdates
-          remoteLogin
           stethoscopeVersion
-          openWifiConnections
 
           applications {
             name
@@ -114,11 +109,7 @@ export default class Stethoscope {
           publicFirewall
           privateFirewall
           domainFirewall
-          automaticUpdates
           diskEncryption
-          screenLock
-          screenIdle
-          remoteLogin
           automaticAppUpdates
           automaticSecurityUpdates
           automaticOsUpdates

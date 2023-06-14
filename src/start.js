@@ -124,23 +124,12 @@ async function createWindow () {
     mainWindow.webContents.openDevTools()
   }
 
-  // required at run time so dependencies can be injected
-  updater = updateInit(env, mainWindow, log, server, focusOrCreateWindow)
-
-  if (isLaunching) {
-    updater.checkForUpdates({}, {}, {}, true)
-    // check for updates in background
-    const EVERY_DAY = 86400 * 1000
-    setInterval(() => updater.checkForUpdates({}, {}, {}, true), EVERY_DAY)
-    isLaunching = false
-  }
-
   if (isFirstLaunch && !IS_TEST) {
     dialog.showMessageBox({
       type: 'info',
-      title: 'Auto Launch',
-      message: 'Would you like to automatically launch Stethoscope on start-up?',
-      buttons: ['Yes', 'No']
+      title: 'Démarrage automatique',
+      message: 'Souhaitez-vous lancer automatiquement Stethoscope au démarrage ?',
+      buttons: ['Oui', 'Non']
     }).then(({ response }) => {
       const autoLauncher = new AutoLauncher(app.name)
       if (response === 0) {
@@ -178,14 +167,14 @@ async function createWindow () {
       return new Promise((resolve, reject) => {
         dialog.showMessageBox({
           type: 'info',
-          title: 'Allow Access',
-          message: `Will you allow your Stethoscope log files to be sent to ${origin}?`,
-          buttons: ['Yes', 'No']
+          title: 'Autoriser accès',
+          message: `Autorisez-vous l'envoi des logs de Stethoscope à ${origin}?`,
+          buttons: ['Oui', 'Non']
         }).then(({ response }) => {
           if (response === 0) {
             resolve()
           } else {
-            reject(new Error('Access denied'))
+            reject(new Error('Accès refusé'))
           }
         })
       })
@@ -396,5 +385,9 @@ ipcMain.on('get:env:basePath', (event, arg) => {
   const basePath = `${dev ? '.' : process.resourcesPath}/src/practices`
   event.returnValue = basePath
 })
+
+app.commandLine.appendSwitch('ignore-gpu-blacklist')
+app.commandLine.appendSwitch('disable-gpu')
+app.commandLine.appendSwitch('disable-gpu-compositing')
 
 export {}

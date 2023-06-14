@@ -1,0 +1,85 @@
+organization: Stethoscope
+version: "1.0"
+policyFormat: "1.0"
+
+strings:
+  ok: La machine est configurée correctement
+  warning: >
+    Les paramètres de sécurité de cet appareil pourraient être améliorés.
+    Cliquez sur la flèche située à côté de chaque recommandation pour obtenir des instructions.
+  critical: >
+    Les paramètres de sécurité de cet appareil pourraient être améliorés.
+    Cliquez sur la flèche située à côté de chaque recommandation pour obtenir des instructions.
+  policyDescription: :Points de référence
+  rescanButton: Scanner à nouveau
+  lastScan: Dernier scan par
+
+practices:
+  firewall:
+    title: >
+      {{#if passing}}
+        Votre pare-feu est activé
+      {{else}}
+        Votre pare-feu doit être activé
+      {{/if}}
+    description: >
+      Les instructions pour activer le pare-feu sont disponibles via :
+    directions:
+      darwin: |
+        <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/CoupeFeuMac')">Documentation Coupe-feu Mac</a>
+      win32: |
+        <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/PareFeuWindows')">Documentation Pare-feu Windows</a>
+      linux: |
+        1. Pour Ubuntu : <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/PareFeuUbuntu')">Documentation Pare-feu Ubuntu</a>
+
+  diskEncryption:
+    title: >
+      {{#if passing}}
+        Le chiffrement du disque est activé
+      {{else}}
+        Le chiffrement du disque doit être activé
+      {{/if}}
+    description: >
+      Une fiche pratique a été éditée afin de permettre la mise en place du chiffrement sur Windows et MacOS. Cette même fiche reprécise également les directives pour Linux. Vous pourrez retrouver toutes les ressources ci-dessous :
+
+    directions:
+      darwin: |
+        <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/atolcdChiffrementDuDisque')">Documentation chiffrement du disque</a>
+        {{#each disks}}
+          <li>
+            {{#if this.encrypted}}
+              {{{okIcon this.label}}}
+            {{else}}
+              {{{warnIcon this.label}}}
+            {{/if}}
+          </li>
+        {{/each}}
+
+      win32: |
+        <a href="#" onclick="require('electron').shell.openExternal('url')">Documentation</a>
+      linux: |
+        <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/atolcdChiffrementDuDisque')">Documentation chiffrement du disque</a>
+
+  osVersion:
+    title: >
+      {{#if passing}}
+        Le système est à jour
+      {{else}}
+        Le système doit être mis à jour
+      {{/if}}
+    description: >
+      Les instructions pour maintenir votre système à jour sont disponibles via :
+    directions:
+      darwin: |
+        <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/SystemeMac')">Documentation mise à jour système MacOS</a>
+
+      win32: |
+        <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/SystemeWindows')">Documentation mise à jour système Windows</a>
+
+      linux: |
+        1. Pour Ubuntu : <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/SystemeUbuntu')">Documentation mise à jour système Ubuntu</a>
+        1. Pour Debian : <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/SystemeDebian')">Documentation mise à jour système Debian</a>
+        1. Pour Arch Linux : <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/SystemeArch')">Documentation mise à jour système Arch Linux</a> 
+
+
+

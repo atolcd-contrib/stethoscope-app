@@ -70,9 +70,6 @@ Scans return a JSON object with an overall status and individual practice status
         "osVersion": "PASS",
         "firewall": "PASS",
         "diskEncryption": "PASS",
-        "automaticUpdates": "PASS",
-        "screenLock": "PASS",
-        "remoteLogin": "PASS",
         "stethoscopeVersion": "PASS",
         "applications": [
           {
@@ -164,49 +161,6 @@ Valid values are: `ALWAYS`, `SUGGESTED`, `NEVER`, `IF_SUPPORTED`
   "diskEncryption": "ALWAYS"
 }
 ```
-
-### `automaticUpdates`
-
-The automatic updates practice checks that the user has automatic updates enabled on their machine through `plist` values and service state (running). This practice uses the `RequirementOption` enum to specify the requirement.
-
-Valid values are: `ALWAYS`, `SUGGESTED`, `NEVER`, `IF_SUPPORTED`
-
-**Example Usage:**
-
-```json
-{
-  "automaticUpdates": "SUGGESTED"
-}
-```
-
-### `screenLock`
-
-Does not work on El Capitan or higher as this setting was moved to the keychain and is not accessible. This practice uses the `RequirementOption` enum to specify the requirement.
-
-Valid values are: `ALWAYS`, `SUGGESTED`, `NEVER`, `IF_SUPPORTED`
-
-**Example Usage:**
-
-```json
-{
-  "screenLock": "IF_SUPPORTED"
-}
-```
-
-### `remoteLogin`
-
-Checks that remote login (RDP, SSH) is disabled for the device. This practice uses the `RequirementOption` enum to specify the requirement.
-
-Valid values are: `ALWAYS`, `SUGGESTED`, `NEVER`, `IF_SUPPORTED`
-
-**Example Usage:**
-
-```json
-{
-  "remoteLogin": "NEVER"
-}
-```
-
 ### `applications`
 
 Application requirements have their own GraphQL schema:
@@ -272,20 +226,4 @@ input ApplicationRequirement {
     }
   }
 ]
-```
-
-### `openWifiConnections`
-
-NOTE: Currently supported on MacOS only
-
-Checks if there are old wifi connections cached locally. This practice uses the `RequirementOption` enum to specify the requirement.
-
-Valid values are: `ALWAYS`, `SUGGESTED`, `NEVER`, `IF_SUPPORTED`
-
-**Example Usage:**
-
-```json
-{
-  "openWifiConnections": "SUGGESTED"
-}
 ```

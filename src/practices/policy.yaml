@@ -16,12 +16,7 @@ osVersion:
     ok: ">=20.04.2"
     nudge: ">=18.04.5"
   linux:
-    ok: ">=20.04.2"
-    nudge: ">=18.04.5"
+    ok: ">=11.x"
+    nudge: ">=10.x"
 firewall: ALWAYS
 diskEncryption: ALWAYS
-automaticUpdates: SUGGESTED
-screenLock: IF_SUPPORTED
-screenIdle: "<=120"
-remoteLogin: NEVER
-openWifiConnections: SUGGESTED
