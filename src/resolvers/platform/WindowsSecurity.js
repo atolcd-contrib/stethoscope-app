@@ -22,8 +22,7 @@ export default {
 
   async firewall (root, args, context) {
     const result = await kmd('firewall', context)
-    
-    return result.firewalls.every(fw => fw.status === 'ON')
+    return result.firewalls.every(fw => fw.status === 'True')
   },
 
   async applications (root, appsToValidate, context) {

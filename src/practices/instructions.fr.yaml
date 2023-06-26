@@ -10,7 +10,7 @@ strings:
   critical: >
     Les paramètres de sécurité de cet appareil pourraient être améliorés.
     Cliquez sur la flèche située à côté de chaque recommandation pour obtenir des instructions.
-  policyDescription: :Points de référence
+  policyDescription: liste des points de contrôle
   rescanButton: Scanner à nouveau
   lastScan: Dernier scan par
 
