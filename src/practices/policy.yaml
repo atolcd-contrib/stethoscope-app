@@ -20,3 +20,4 @@ osVersion:
     nudge: ">=10.x"
 firewall: ALWAYS
 diskEncryption: ALWAYS
+antivirus: ALWAYS

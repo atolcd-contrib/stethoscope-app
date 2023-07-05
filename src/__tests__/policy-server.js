@@ -71,6 +71,7 @@ describe('GraphQL', () => {
           firewall
           diskEncryption
           stethoscopeVersion
+          antivirus
 
           applications {
             name
@@ -124,6 +125,7 @@ describe('GraphQL', () => {
           automaticDownloadUpdates
           automaticConfigDataInstall
           automaticCheckEnabled
+          antivirus
         }
       }
     }`
@@ -142,7 +144,7 @@ describe('GraphQL', () => {
           }
         },
         firewall: 'ALWAYS',
-        diskEncryption: 'ALWAYS',
+        diskEncryption: 'ALWAYS'
       }
     })
 

@@ -189,6 +189,11 @@ const Device = {
       async domainFirewall () {
         const status = await Security.domainFirewall(root, args, context)
         return securityToDeviceStatus(status)
+      },
+
+      async antivirus () {
+        const status = await Security.antivirus(root, args, context)
+        return securityToDeviceStatus(status)
       }
     }
   },

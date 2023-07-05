@@ -75,6 +75,7 @@ export default class Stethoscope {
           firewall
           diskEncryption
           stethoscopeVersion
+          antivirus
 
           applications {
             name
@@ -116,6 +117,7 @@ export default class Stethoscope {
           automaticDownloadUpdates
           automaticConfigDataInstall
           automaticCheckEnabled
+          antivirus
         }
       }
     }`

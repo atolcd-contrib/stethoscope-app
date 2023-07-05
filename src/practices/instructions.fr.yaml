@@ -45,18 +45,8 @@ practices:
     directions:
       darwin: |
         <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/atolcdChiffrementDuDisque')">Documentation chiffrement du disque</a>
-        {{#each disks}}
-          <li>
-            {{#if this.encrypted}}
-              {{{okIcon this.label}}}
-            {{else}}
-              {{{warnIcon this.label}}}
-            {{/if}}
-          </li>
-        {{/each}}
-
       win32: |
-        <a href="#" onclick="require('electron').shell.openExternal('url')">Documentation</a>
+        <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/atolcdChiffrementDuDisque')">Documentation chiffrement du disque</a>
       linux: |
         <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/atolcdChiffrementDuDisque')">Documentation chiffrement du disque</a>
 
@@ -81,5 +71,15 @@ practices:
         1. Pour Debian : <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/SystemeDebian')">Documentation mise à jour système Debian</a>
         1. Pour Arch Linux : <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/SystemeArch')">Documentation mise à jour système Arch Linux</a> 
 
-
-
+  antivirus:
+    title: >
+      {{#if passing}}
+        L'antivirus est activé
+      {{else}}
+        Votre antivirus doit être activé
+      {{/if}}
+    description: >
+      Cette vérification concerne uniquement Windows, elle n'est donc pas supportée sous Linux et MacOS
+    directions:
+      win32: |
+        Les informations pour activer votre antivirus sont disponibles via : <a href="#" onclick="require('electron').shell.openExternal('https://atol.cd/AntivirusDefender')">Documentation Antivirus Defender</a>

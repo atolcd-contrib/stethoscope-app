@@ -84,6 +84,8 @@ type SecurityInfo {
   privateFirewall: FeatureState
   # Windows
   domainFirewall: FeatureState
+  # Windows
+  antivirus: FeatureState
 }
 
 type Application {
@@ -135,6 +137,8 @@ input DevicePolicy {
   screenIdle: NumericRange
   # remote login status
   remoteLogin: RequirementOption
+  # Windows antivirus status
+  antivirus: RequirementOption
   # require applications to be installed
   applications: [ApplicationRequirement]
   # add extensions
@@ -184,6 +188,8 @@ type PolicyResult {
   stethoscopeVersion: FeatureState
   # Open Wi-Fi
   openWifiConnections: FeatureState
+  # antivirus
+  antivirus: FeatureState
 }
 
 type Security {
@@ -207,6 +213,7 @@ type Security {
   privateFirewall(requirement: RequirementOption!): Boolean!
   domainFirewall(requirement: RequirementOption!): Boolean!
   openWifiConnections(requirement: RequirementOption!): Boolean!
+  antivirus(requirement: RequirementOption!): Boolean!
 }
 
 type IpAddress {

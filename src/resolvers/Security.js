@@ -140,6 +140,14 @@ export default {
     return UNSUPPORTED
   },
 
+  async antivirus (root, args, context) {
+    if ('antivirus' in PlatformSecurity) {
+      return PlatformSecurity.antivirus(root, args, context)
+    }
+
+    return UNSUPPORTED
+  },
+
   async applications (root, args, context, osPlatform, osVersion) {
     if ('applications' in PlatformSecurity) {
       const platformApps = await applicationPlatformFilter(args.applications, context, osPlatform, osVersion)

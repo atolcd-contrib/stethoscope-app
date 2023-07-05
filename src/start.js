@@ -29,7 +29,6 @@ import iconFinder from './lib/findIcon'
 import startGraphQLServer from './server'
 import { IS_MAC, IS_WIN } from './lib/platform'
 import AutoLauncher from './AutoLauncher'
-import updateInit from './updater'
 
 const remoteMain = require('@electron/remote/main')
 remoteMain.initialize()
@@ -49,7 +48,6 @@ let server
 let updater
 let launchIntoUpdater = false
 let deeplinkingUrl
-let isLaunching = true
 let isFirstLaunch = false
 // icons that are displayed in the Menu bar
 const statusImages = {
@@ -138,7 +136,6 @@ async function createWindow () {
         autoLauncher.disable()
       }
     })
-    isLaunching = false
   }
 
   if (tray) tray.destroy()

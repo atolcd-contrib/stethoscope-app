@@ -17,6 +17,7 @@ query ValidateDevice($policy: DevicePolicy!) {
       firewall
       diskEncryption
       stethoscopeVersion
+      antivirus
     }
   }
 
@@ -53,6 +54,7 @@ query ValidateDevice($policy: DevicePolicy!) {
       automaticAppUpdates
       automaticSecurityUpdates
       automaticOsUpdates
+      antivirus
     }
   }
 }
@@ -77,7 +79,8 @@ Parameters
     },
     "firewall": "ALWAYS",
     "diskEncryption": "ALWAYS",
-    "remoteLogin": "NEVER"
+    "remoteLogin": "NEVER",
+    "antivirus": "ALWAYS"
   }
 }
 ```
@@ -93,7 +96,8 @@ Response:
         "osVersion": "PASS",
         "firewall": "PASS",
         "diskEncryption": "PASS",
-        "stethoscopeVersion": "PASS"
+        "stethoscopeVersion": "PASS",
+        "antivirus": "PASS"
       }
     },
     "device": {
@@ -157,7 +161,8 @@ Response:
         "diskEncryption": "ON",
         "automaticAppUpdates": "ON",
         "automaticSecurityUpdates": "ON",
-        "automaticOsUpdates": "ON"
+        "automaticOsUpdates": "ON",
+        "antivirus": "ON"
       }
     }
   }

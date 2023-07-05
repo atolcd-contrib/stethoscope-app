@@ -25,6 +25,11 @@ export default {
     return result.firewalls.every(fw => fw.status === 'True')
   },
 
+  async antivirus (root, args, context) {
+    const result = await kmd('antivirus', context)
+    return result.defender === 'True'
+  },
+
   async applications (root, appsToValidate, context) {
     // gather set of optional registry path overrides from policy
     const registryPathOverrides = new Set()

@@ -16,5 +16,5 @@ export {
   MAC,
   WIN,
   LINUX,
-  UBUNTU,
+  UBUNTU
 }
